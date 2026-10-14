@@ -8,9 +8,7 @@
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::Json;
-use bill8::webhooks::contracts::{
-    CreateWebhookEndpointRequest, Delivery, Event, WebhookEndpoint,
-};
+use bill8::webhooks::contracts::{CreateWebhookEndpointRequest, Delivery, Event, WebhookEndpoint};
 use sqlx::Row;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -80,10 +78,13 @@ pub async fn create_endpoint(
         &a,
         &headers,
         sentin8::shield::EvalTarget::new("bill8:webhooks:endpoints:write"),
-    ).await?;
+    )
+    .await?;
 
     let mut conn = state.pool.begin().await.map_err(err_db)?;
-    set_tenant_context(&mut conn, a.env_id()).await.map_err(err_db)?;
+    set_tenant_context(&mut conn, a.env_id())
+        .await
+        .map_err(err_db)?;
 
     let id = Uuid::new_v4();
     // Signing secret: generated per endpoint, stored BY REFERENCE.
@@ -137,10 +138,13 @@ pub async fn list_endpoints(
         &a,
         &headers,
         sentin8::shield::EvalTarget::new("bill8:webhooks:endpoints:read"),
-    ).await?;
+    )
+    .await?;
 
     let mut conn = state.pool.acquire().await.map_err(err_db)?;
-    set_tenant_context(&mut conn, a.env_id()).await.map_err(err_db)?;
+    set_tenant_context(&mut conn, a.env_id())
+        .await
+        .map_err(err_db)?;
 
     let rows = sqlx::query(
         "SELECT id, env_id, url, enabled_events, enabled, secret_ref, created_at FROM webhooks.webhook_endpoints ORDER BY created_at DESC LIMIT 200",
@@ -173,10 +177,13 @@ pub async fn list_events(
         &a,
         &headers,
         sentin8::shield::EvalTarget::new("bill8:webhooks:events:read"),
-    ).await?;
+    )
+    .await?;
 
     let mut conn = state.pool.acquire().await.map_err(err_db)?;
-    set_tenant_context(&mut conn, a.env_id()).await.map_err(err_db)?;
+    set_tenant_context(&mut conn, a.env_id())
+        .await
+        .map_err(err_db)?;
 
     let rows = sqlx::query(
         "SELECT id, env_id, event_type, data, created_at FROM webhooks.events ORDER BY created_at DESC LIMIT 200",
@@ -220,10 +227,13 @@ pub async fn list_deliveries(
         &a,
         &headers,
         sentin8::shield::EvalTarget::new("bill8:webhooks:events:read"),
-    ).await?;
+    )
+    .await?;
 
     let mut conn = state.pool.acquire().await.map_err(err_db)?;
-    set_tenant_context(&mut conn, a.env_id()).await.map_err(err_db)?;
+    set_tenant_context(&mut conn, a.env_id())
+        .await
+        .map_err(err_db)?;
 
     let rows = sqlx::query(
         "SELECT id, event_id, endpoint_id, status, attempts, last_attempted_at, created_at FROM webhooks.deliveries WHERE event_id = $1 ORDER BY created_at DESC",
@@ -271,10 +281,13 @@ pub async fn replay_event(
         &a,
         &headers,
         sentin8::shield::EvalTarget::new("bill8:webhooks:events:write"),
-    ).await?;
+    )
+    .await?;
 
     let mut conn = state.pool.begin().await.map_err(err_db)?;
-    set_tenant_context(&mut conn, a.env_id()).await.map_err(err_db)?;
+    set_tenant_context(&mut conn, a.env_id())
+        .await
+        .map_err(err_db)?;
 
     // Reset dead/failed deliveries for this event to retry.
     let result = sqlx::query(
@@ -286,7 +299,9 @@ pub async fn replay_event(
     .map_err(err_db)?;
 
     conn.commit().await.map_err(err_db)?;
-    Ok(Json(serde_json::json!({ "requeued": result.rows_affected() })))
+    Ok(Json(
+        serde_json::json!({ "requeued": result.rows_affected() }),
+    ))
 }
 
 fn row_to_endpoint(row: &sqlx::postgres::PgRow) -> WebhookEndpoint {
@@ -294,7 +309,9 @@ fn row_to_endpoint(row: &sqlx::postgres::PgRow) -> WebhookEndpoint {
         id: row.get("id"),
         env_id: row.get("env_id"),
         url: row.get("url"),
-        enabled_events: row.get::<sqlx::types::Json<Vec<String>>, _>("enabled_events").0,
+        enabled_events: row
+            .get::<sqlx::types::Json<Vec<String>>, _>("enabled_events")
+            .0,
         enabled: row.get("enabled"),
         secret_ref: row.get("secret_ref"),
         created_at: row.get("created_at"),

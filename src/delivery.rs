@@ -44,8 +44,8 @@ pub fn backoff_seconds(attempt: i32) -> u64 {
 /// assert!(!verify_signature(&format!("{} ", body), "whsec_test", t, &v1));
 /// ```
 pub fn compute_signature(body: &str, secret: &str, timestamp: i64) -> String {
-    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
-        .expect("HMAC accepts any key length");
+    let mut mac =
+        Hmac::<Sha256>::new_from_slice(secret.as_bytes()).expect("HMAC accepts any key length");
     mac.update(format!("{timestamp}.{body}").as_bytes());
     let out = mac.finalize().into_bytes();
     format!("t={timestamp},v1={}", hex_encode(&out))

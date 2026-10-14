@@ -20,10 +20,7 @@ use crate::handlers;
 /// # Errors
 /// Returns the certificate-ensure or transport-build failure (the
 /// caller logs and degrades).
-async fn build_workload_http(
-    auth_issuer: &str,
-    workload: &str,
-) -> anyhow::Result<reqwest::Client> {
+async fn build_workload_http(auth_issuer: &str, workload: &str) -> anyhow::Result<reqwest::Client> {
     let cert = sentin8::auth::m2m::ensure_workload_certificate(
         auth_issuer,
         workload,
@@ -97,5 +94,8 @@ pub fn routes(router: axum::Router<handlers::AppState>) -> axum::Router<handlers
         )
         .route("/v1/events", get(handlers::list_events))
         .route("/v1/events/{id}/deliveries", get(handlers::list_deliveries))
-        .route("/v1/events/{id}/replay", axum::routing::post(handlers::replay_event))
+        .route(
+            "/v1/events/{id}/replay",
+            axum::routing::post(handlers::replay_event),
+        )
 }

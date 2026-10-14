@@ -11,13 +11,11 @@ use crate::handlers;
 
 /// The webhooks service's OpenAPI document.
 #[derive(OpenApi)]
-#[openapi(
-    paths(
-        handlers::create_endpoint,
-        handlers::list_endpoints,
-        handlers::list_events,
-        handlers::list_deliveries,
-        handlers::replay_event,
-    )
-)]
+#[openapi(paths(
+    handlers::create_endpoint,
+    handlers::list_endpoints,
+    handlers::list_events,
+    handlers::list_deliveries,
+    handlers::replay_event,
+))]
 pub struct WebhooksOpenApi;

@@ -37,7 +37,8 @@ const FAMILIES: &[&str] = &[
 /// materializes ONE row), store the envelope + payload.
 async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: serde_json::Value) {
     let Ok(event_id) = Uuid::parse_str(
-        payload.get("event_id")
+        payload
+            .get("event_id")
             .or_else(|| payload.get("id"))
             .and_then(|v| v.as_str())
             .unwrap_or_default(),
@@ -95,8 +96,9 @@ async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: 
     if let Ok(endpoints) = endpoints {
         for ep in endpoints {
             let endpoint_id: Uuid = ep.get("id");
-            let enabled_events: Vec<String> =
-                ep.get::<sqlx::types::Json<Vec<String>>, _>("enabled_events").0;
+            let enabled_events: Vec<String> = ep
+                .get::<sqlx::types::Json<Vec<String>>, _>("enabled_events")
+                .0;
             // An endpoint receives ONLY its enabled event types.
             if !enabled_events.is_empty() && !enabled_events.iter().any(|e| e == event_type) {
                 continue;
@@ -123,7 +125,9 @@ async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: 
 
             // The signed delivery itself (bounded inline attempt; the
             // retry/DLQ worker continues from the deliveries table).
-            if let Err(e) = deliver_signed(&state, env_id, &url, &secret_ref, event_type, &payload).await {
+            if let Err(e) =
+                deliver_signed(state, env_id, &url, &secret_ref, event_type, &payload).await
+            {
                 tracing::warn!(error = %e, "webhooks: first delivery attempt failed — retrying via worker");
                 let _ = sqlx::query(
                     "UPDATE webhooks.deliveries SET status = 'retry', attempts = 1, last_attempted_at = now() WHERE id = $1",
@@ -192,7 +196,10 @@ pub fn spawn_consumers(state: AppState) {
         let state = state.clone();
         let family_static: &'static str = family;
         tokio::spawn(async move {
-            tracing::info!(family = family_static, "webhooks materialize consumer started");
+            tracing::info!(
+                family = family_static,
+                "webhooks materialize consumer started"
+            );
             loop {
                 match bus.sse_consume(family_static, MATERIALIZE_GROUP).await {
                     Ok(resp) => {
@@ -213,11 +220,19 @@ pub fn spawn_consumers(state: AppState) {
                                 let Some(data) = line.strip_prefix("data: ") else {
                                     continue;
                                 };
-                                if let Ok(msg) = serde_json::from_str::<serde_json::Value>(data.trim()) {
-                                    let env_id = msg.get("env_id").and_then(|v| v.as_str())
+                                if let Ok(msg) =
+                                    serde_json::from_str::<serde_json::Value>(data.trim())
+                                {
+                                    let env_id = msg
+                                        .get("env_id")
+                                        .and_then(|v| v.as_str())
                                         .and_then(|s| Uuid::parse_str(s).ok());
-                                    let event_type = msg.get("event_type").and_then(|v| v.as_str()).unwrap_or("");
-                                    let payload = msg.get("payload").cloned().unwrap_or(msg.clone());
+                                    let event_type = msg
+                                        .get("event_type")
+                                        .and_then(|v| v.as_str())
+                                        .unwrap_or("");
+                                    let payload =
+                                        msg.get("payload").cloned().unwrap_or(msg.clone());
                                     if let Some(env_id) = env_id {
                                         materialize(&state, env_id, event_type, payload).await;
                                     }

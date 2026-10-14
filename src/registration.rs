@@ -8,20 +8,18 @@
 //! over the vertical's families).
 
 use sentin8::registration::{
-    AdminScope, AdminUi, AdminUiPage, ErrorCode, M2mGrant, PgRole, PolicySetDecl,
-    Registration, SqlMigration,
+    AdminScope, AdminUi, AdminUiPage, ErrorCode, M2mGrant, PgRole, PolicySetDecl, Registration,
+    SqlMigration,
 };
 use utoipa::OpenApi;
 
-const PG_ROLES: &[PgRole] = &[
-    PgRole {
-        scope: "bill8:webhooks:read,bill8:webhooks:write",
-        role: "bill8_webhooks_service",
-        bypass_rls: false,
-        database: "bill8",
-        cross_schema_grants: &[],
-    },
-];
+const PG_ROLES: &[PgRole] = &[PgRole {
+    scope: "bill8:webhooks:read,bill8:webhooks:write",
+    role: "bill8_webhooks_service",
+    bypass_rls: false,
+    database: "bill8",
+    cross_schema_grants: &[],
+}];
 
 const M2M_GRANTS: &[M2mGrant] = &[
     M2mGrant {
@@ -61,24 +59,74 @@ const M2M_GRANTS: &[M2mGrant] = &[
 ];
 
 const ADMIN_SCOPES: &[AdminScope] = &[
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:endpoints:read" },
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:endpoints:write" },
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:events:read" },
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:events:write" },
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:policy:read" },
-    AdminScope::Typed { role: "bill8:webhooks:admin", scope: "bill8:webhooks:policy:write" },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:endpoints:read",
+    },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:endpoints:write",
+    },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:events:read",
+    },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:events:write",
+    },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:policy:read",
+    },
+    AdminScope::Typed {
+        role: "bill8:webhooks:admin",
+        scope: "bill8:webhooks:policy:write",
+    },
 ];
 
 const ERROR_CODES: &[ErrorCode] = &[
-    ErrorCode { enum_name: "WebhooksEndpointNotFound", error_code: "webhooks_endpoint_not_found", status_code: 404 },
-    ErrorCode { enum_name: "WebhooksEventNotFound", error_code: "webhooks_event_not_found", status_code: 404 },
+    ErrorCode {
+        enum_name: "WebhooksEndpointNotFound",
+        error_code: "webhooks_endpoint_not_found",
+        status_code: 404,
+    },
+    ErrorCode {
+        enum_name: "WebhooksEventNotFound",
+        error_code: "webhooks_event_not_found",
+        status_code: 404,
+    },
 ];
 
 const ADMIN_UI_PAGES: &[AdminUiPage] = &[
-    AdminUiPage { route: "overview", label: "Overview", ui_endpoint: "/v1/admin/ui/overview", data_endpoint: "/v1/admin/overview", icon: "0xe1b1" },
-    AdminUiPage { route: "endpoints", label: "Endpoints", ui_endpoint: "/v1/admin/ui/endpoints", data_endpoint: "/v1/admin/endpoints", icon: "0xe80b" },
-    AdminUiPage { route: "events", label: "Events", ui_endpoint: "/v1/admin/ui/events", data_endpoint: "/v1/admin/events", icon: "0xe8af" },
-    AdminUiPage { route: "deliveries", label: "Deliveries", ui_endpoint: "/v1/admin/ui/deliveries", data_endpoint: "/v1/admin/deliveries", icon: "0xe163" },
+    AdminUiPage {
+        route: "overview",
+        label: "Overview",
+        ui_endpoint: "/v1/admin/ui/overview",
+        data_endpoint: "/v1/admin/overview",
+        icon: "0xe1b1",
+    },
+    AdminUiPage {
+        route: "endpoints",
+        label: "Endpoints",
+        ui_endpoint: "/v1/admin/ui/endpoints",
+        data_endpoint: "/v1/admin/endpoints",
+        icon: "0xe80b",
+    },
+    AdminUiPage {
+        route: "events",
+        label: "Events",
+        ui_endpoint: "/v1/admin/ui/events",
+        data_endpoint: "/v1/admin/events",
+        icon: "0xe8af",
+    },
+    AdminUiPage {
+        route: "deliveries",
+        label: "Deliveries",
+        ui_endpoint: "/v1/admin/ui/deliveries",
+        data_endpoint: "/v1/admin/deliveries",
+        icon: "0xe163",
+    },
 ];
 
 /// The scope-mirror Shield text.
@@ -101,7 +149,8 @@ const EVENT_TRIGGERS: &[sentin8::registration::EventTriggerDecl] = &[];
 const SQL_1_INIT: &str = include_str!("../sql/init.sql");
 
 fn openapi_spec() -> serde_json::Value {
-    serde_json::to_value(crate::openapi::WebhooksOpenApi::openapi()).unwrap_or(serde_json::Value::Null)
+    serde_json::to_value(crate::openapi::WebhooksOpenApi::openapi())
+        .unwrap_or(serde_json::Value::Null)
 }
 
 /// Print the registration JSON to stdout.
@@ -124,7 +173,11 @@ pub fn print(section: Option<String>) -> anyhow::Result<()> {
             service_flag: "webhooks",
             pages: ADMIN_UI_PAGES,
         }),
-        sql_migrations: vec![SqlMigration { version: 1, name: "init", sql: SQL_1_INIT }],
+        sql_migrations: vec![SqlMigration {
+            version: 1,
+            name: "init",
+            sql: SQL_1_INIT,
+        }],
         pg_roles: PG_ROLES,
         audit_findings: None,
         service_actions: None,
