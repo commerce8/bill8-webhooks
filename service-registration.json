@@ -1,0 +1,25 @@
+{
+  "vertical": "bill8",
+  "services": [
+    {
+      "service_type": "bill8:webhooks",
+      "event_triggers": [
+        {
+          "event_type": "bill8:payments:charge:succeeded",
+          "consumer_group": "bill8:webhooks:materialize",
+          "action": "materialize_event"
+        },
+        {
+          "event_type": "bill8:payments:charge:failed",
+          "consumer_group": "bill8:webhooks:materialize",
+          "action": "materialize_event"
+        },
+        {
+          "event_type": "bill8:payments:refund:created",
+          "consumer_group": "bill8:webhooks:materialize",
+          "action": "materialize_event"
+        }
+      ]
+    }
+  ]
+}
