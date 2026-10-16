@@ -19,7 +19,11 @@
           "consumer_group": "bill8:webhooks:materialize",
           "action": "materialize_event"
         }
-      ]
+      ],
+      "telemetry_property": {
+        "slug": "webhooks",
+        "name": "Bill8:Webhooks Telemetry"
+      }
     }
   ]
 }
