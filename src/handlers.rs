@@ -47,6 +47,15 @@ pub fn err_db(e: sqlx::Error) -> (StatusCode, String) {
     (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
 }
 
+#[utoipa::path(
+    get,
+    path = "/v1/health",
+    responses(
+        (status = 200, description = "Liveness (version, build)", body = serde_json::Value),
+    ),
+    security(),
+    tag = "meta",
+)]
 /// Health probe payload.
 pub async fn health() -> axum::Json<serde_json::Value> {
     axum::Json(serde_json::json!({

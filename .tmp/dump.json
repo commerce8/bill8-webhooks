@@ -1,0 +1,349 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "bill8-webhooks",
+    "description": "Sentin8 Bill8:Webhooks — event materialization, signed delivery.",
+    "license": {
+      "name": "MIT OR Apache-2.0",
+      "identifier": "MIT OR Apache-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/events": {
+      "get": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "`GET /v1/events` — list materialized events.",
+        "operationId": "list_events",
+        "responses": {
+          "200": {
+            "description": "List of events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing bill8:webhooks:events:read"
+          }
+        },
+        "security": [
+          {
+            "bill8:webhooks:events:read": []
+          }
+        ]
+      }
+    },
+    "/v1/events/{id}/deliveries": {
+      "get": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "`GET /v1/events/{id}/deliveries` — the delivery log for an event.",
+        "operationId": "list_deliveries",
+        "responses": {
+          "200": {
+            "description": "Delivery attempts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Delivery"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing bill8:webhooks:events:read"
+          }
+        },
+        "security": [
+          {
+            "bill8:webhooks:events:read": []
+          }
+        ]
+      }
+    },
+    "/v1/events/{id}/replay": {
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "`POST /v1/events/{id}/replay` — re-queue a DLQ/failed delivery for\nmanual replay (never silently dropped).",
+        "operationId": "replay_event",
+        "responses": {
+          "200": {
+            "description": "Requeued for delivery"
+          },
+          "403": {
+            "description": "Missing bill8:webhooks:events:write"
+          }
+        },
+        "security": [
+          {
+            "bill8:webhooks:events:write": []
+          }
+        ]
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Health probe payload.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Liveness (version, build)",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/webhook-endpoints": {
+      "get": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "`GET /v1/webhook-endpoints` — list endpoints.",
+        "operationId": "list_endpoints",
+        "responses": {
+          "200": {
+            "description": "List of endpoints",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookEndpoint"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing bill8:webhooks:endpoints:read"
+          }
+        },
+        "security": [
+          {
+            "bill8:webhooks:endpoints:read": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "webhooks"
+        ],
+        "summary": "`POST /v1/webhook-endpoints` — register an endpoint.",
+        "operationId": "create_endpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Endpoint created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookEndpoint"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing bill8:webhooks:endpoints:write"
+          }
+        },
+        "security": [
+          {
+            "bill8:webhooks:endpoints:write": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateWebhookEndpointRequest": {
+        "type": "object",
+        "description": "Request body for `POST /v1/webhook-endpoints`.",
+        "required": [
+          "url",
+          "enabled_events"
+        ],
+        "properties": {
+          "enabled_events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Enabled event types."
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL."
+          }
+        }
+      },
+      "Delivery": {
+        "type": "object",
+        "description": "A signed delivery attempt.",
+        "required": [
+          "id",
+          "event_id",
+          "endpoint_id",
+          "status",
+          "attempts",
+          "created_at"
+        ],
+        "properties": {
+          "attempts": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Attempt count (exponential backoff budget)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp."
+          },
+          "endpoint_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The target endpoint."
+          },
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The delivered event."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Delivery id."
+          },
+          "last_attempted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Last-attempt timestamp."
+          },
+          "status": {
+            "type": "string",
+            "description": "Lifecycle state (`pending` / `succeeded` / `retry` / `dead`)."
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "description": "A materialized domain event with its envelope.",
+        "required": [
+          "id",
+          "env_id",
+          "event_type",
+          "data",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp."
+          },
+          "data": {
+            "description": "Full event payload."
+          },
+          "env_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owning tenant environment."
+          },
+          "event_type": {
+            "type": "string",
+            "description": "Event type (e.g. `bill8:payments:charge:succeeded`)."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Event id (dedupe key — duplicate delivery materializes one row)."
+          }
+        }
+      },
+      "WebhookEndpoint": {
+        "type": "object",
+        "description": "A merchant-configured delivery target with its enabled event types.",
+        "required": [
+          "id",
+          "env_id",
+          "url",
+          "enabled_events",
+          "enabled",
+          "secret_ref",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp."
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Enabled state."
+          },
+          "enabled_events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Enabled event types (an endpoint receives only these)."
+          },
+          "env_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Owning tenant environment."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Endpoint id."
+          },
+          "secret_ref": {
+            "type": "string",
+            "description": "Secret reference holding the signing secret (Sentin8:Secrets)."
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL."
+          }
+        }
+      }
+    }
+  }
+}
