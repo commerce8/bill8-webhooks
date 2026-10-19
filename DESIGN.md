@@ -1,4 +1,4 @@
-# Bill8:Webhooks — Detailed Design Document
+# Bill8:Webhooks - Detailed Design Document
 
 ## 1. Scope & Context
 
@@ -64,9 +64,9 @@ erDiagram
 | `deliveries` | Delivery attempts with status/retry count |
 
 **Producer tables** (platform contracts, `webhooks` leaf schema):
-`webhooks.outbox` (DBX producer path — architecture-principles §6.7)
+`webhooks.outbox` (DBX producer path - architecture-principles §6.7)
 and `webhooks.audit_journal` (the 15-column contract of
-`sentin8_audit::audit_journal_sql`, AUDJOUR-1 — env-pinned RLS, drained
+`sentin8_audit::audit_journal_sql`, AUDJOUR-1 - env-pinned RLS, drained
 to Sys `POST /v1/audit` by the shell's boot-8c pusher).
 
 ## 4. API Surface
@@ -74,9 +74,9 @@ to Sys `POST /v1/audit` by the shell's boot-8c pusher).
 | Endpoint group | Prefix | Authorization | Events |
 |---|---|---|---|
 | Endpoints | `/v1/webhook-endpoints` | `bill8:webhooks:endpoints:{read,write}` | `webhook_endpoint:created/updated/deleted` |
-| Events | `/v1/events` | `bill8:webhooks:events:read` | — |
-| Replay | `/v1/events/{id}/replay` | `bill8:webhooks:events:write` | — |
-| Internal | `/v1/internal/*` | M2M | — |
+| Events | `/v1/events` | `bill8:webhooks:events:read` | - |
+| Replay | `/v1/events/{id}/replay` | `bill8:webhooks:events:write` | - |
+| Internal | `/v1/internal/*` | M2M | - |
 
 ## 5. Cross-Cutting Concerns
 
@@ -111,8 +111,8 @@ flowchart TD
 
 ```mermaid
 graph TD
-    U["Unit — signature generation/verification, backoff"] --> I["Integration — DB-backed delivery suites"]
-    I --> E["E2E — e2e-ts UI + BFF proxy only"]
+    U["Unit - signature generation/verification, backoff"] --> I["Integration - DB-backed delivery suites"]
+    I --> E["E2E - e2e-ts UI + BFF proxy only"]
 ```
 
 ## 10. Open Questions

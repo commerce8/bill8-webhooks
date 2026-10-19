@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 // SPDX-License-Identifier: Apache-2.0
 
-//! Webhooks HTTP handlers — endpoints, events, deliveries, replay.
+//! Webhooks HTTP handlers - endpoints, events, deliveries, replay.
 
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
@@ -26,7 +26,7 @@ pub struct AppState {
     pub pool: sqlx::PgPool,
     /// M2M-backed Bus client.
     pub bus_client: sentin8::bus::client::BusClient,
-    /// Shield policy engine — step 5 is the ONLY gate.
+    /// Shield policy engine - step 5 is the ONLY gate.
     pub policy: Arc<Engine>,
 }
 
@@ -64,7 +64,7 @@ pub async fn health() -> axum::Json<serde_json::Value> {
         "version": sentin8::build_info::id(), "build": sentin8::build_info::build_hash() }))
 }
 
-/// `POST /v1/webhook-endpoints` — register an endpoint.
+/// `POST /v1/webhook-endpoints` - register an endpoint.
 #[utoipa::path(
     post,
     path = "/v1/webhook-endpoints",
@@ -126,7 +126,7 @@ pub async fn create_endpoint(
     Ok(Json(row_to_endpoint(&row)))
 }
 
-/// `GET /v1/webhook-endpoints` — list endpoints.
+/// `GET /v1/webhook-endpoints` - list endpoints.
 #[utoipa::path(
     get,
     path = "/v1/webhook-endpoints",
@@ -165,7 +165,7 @@ pub async fn list_endpoints(
     Ok(Json(rows.iter().map(row_to_endpoint).collect()))
 }
 
-/// `GET /v1/events` — list materialized events.
+/// `GET /v1/events` - list materialized events.
 #[utoipa::path(
     get,
     path = "/v1/events",
@@ -214,7 +214,7 @@ pub async fn list_events(
     ))
 }
 
-/// `GET /v1/events/{id}/deliveries` — the delivery log for an event.
+/// `GET /v1/events/{id}/deliveries` - the delivery log for an event.
 #[utoipa::path(
     get,
     path = "/v1/events/{id}/deliveries",
@@ -267,7 +267,7 @@ pub async fn list_deliveries(
     ))
 }
 
-/// `POST /v1/events/{id}/replay` — re-queue a DLQ/failed delivery for
+/// `POST /v1/events/{id}/replay` - re-queue a DLQ/failed delivery for
 /// manual replay (never silently dropped).
 #[utoipa::path(
     post,

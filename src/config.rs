@@ -30,7 +30,7 @@ pub struct WebhooksConfig {
     /// Shared Auth client.
     pub sentin8_auth_client: AuthClient,
     /// Certificate-presenting transport for the service's own workload
-    /// identity (CERTFREE-4V — no M2M token exists).
+    /// identity (CERTFREE-4V - no M2M token exists).
     pub m2m_http: Option<reqwest::Client>,
 }
 

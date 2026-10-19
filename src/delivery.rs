@@ -3,11 +3,11 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 // SPDX-License-Identifier: Apache-2.0
 
-//! The delivery engine — HMAC-SHA256 signatures, exponential backoff,
+//! The delivery engine - HMAC-SHA256 signatures, exponential backoff,
 //! and the bounded retry budget. Exhausted deliveries land in the DLQ
 //! (status `dead`) for manual replay; never silently dropped.
 //!
-//! The signature format: `t=<unix-seconds>,v1=<hex-hmac>` — the timestamp
+//! The signature format: `t=<unix-seconds>,v1=<hex-hmac>` - the timestamp
 //! prevents replay; the HMAC covers `"{t}.{body}"`.
 
 use chrono::Utc;
@@ -15,7 +15,7 @@ use hmac::{Hmac, Mac};
 use sha2::Sha256;
 
 /// The signed-delivery header names (consumers verify with the same
-/// names — an unsigned payload is rejected).
+/// names - an unsigned payload is rejected).
 pub const SIGNATURE_HEADER: &str = "x-bill8-signature";
 
 /// The maximum delivery attempts before the DLQ (exponential backoff:
@@ -51,7 +51,7 @@ pub fn compute_signature(body: &str, secret: &str, timestamp: i64) -> String {
     format!("t={timestamp},v1={}", hex_encode(&out))
 }
 
-/// Hex-encode bytes (lowercase) — the `v1` signature segment format.
+/// Hex-encode bytes (lowercase) - the `v1` signature segment format.
 fn hex_encode(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
@@ -77,7 +77,7 @@ pub fn parse_signature(header: &str) -> Option<(i64, Vec<u8>)> {
 }
 
 /// Verify a payload against a secret + parsed signature parts. The
-/// timestamp is bound into the HMAC — a reused signature on a different
+/// timestamp is bound into the HMAC - a reused signature on a different
 /// body (or timestamp) fails.
 pub fn verify_signature(body: &str, secret: &str, timestamp: i64, provided: &[u8]) -> bool {
     let mut mac = match Hmac::<Sha256>::new_from_slice(secret.as_bytes()) {

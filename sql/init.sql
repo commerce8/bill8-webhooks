@@ -3,7 +3,7 @@
 -- SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 -- SPDX-License-Identifier: Apache-2.0
 
--- Bill8:Webhooks — the service's own schema `webhooks`: endpoints,
+-- Bill8:Webhooks - the service's own schema `webhooks`: endpoints,
 -- materialized events, deliveries. Signing secrets are secret-by-reference.
 
 CREATE SCHEMA IF NOT EXISTS webhooks;

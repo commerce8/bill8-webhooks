@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 // SPDX-License-Identifier: Apache-2.0
 
-//! Axum server setup for Bill8:Webhooks — state binding + routes +
+//! Axum server setup for Bill8:Webhooks - state binding + routes +
 //! the materialization/delivery background loops.
 
 use axum::routing::get;
@@ -15,7 +15,7 @@ use crate::handlers;
 /// auth DESIGN §4.3f): mint-or-load the Acme-issued pair and wrap it
 /// in a reqwest client. The receiving service's TLS layer authenticates
 /// the handshake and the enroll-published registry map authorizes the
-/// scopes — no bearer token exists on this path.
+/// scopes - no bearer token exists on this path.
 ///
 /// # Errors
 /// Returns the certificate-ensure or transport-build failure (the
@@ -41,7 +41,7 @@ pub async fn build_state(core: sentin8::shell::ServiceCore) -> anyhow::Result<ha
     let mut config = crate::config::WebhooksConfig::from_env();
 
     // Cert-presenting Bus client (CERTFREE-4V): the `webhooks` workload
-    // CERTIFICATE is the identity — no DCR, no token (auth DESIGN
+    // CERTIFICATE is the identity - no DCR, no token (auth DESIGN
     // §4.3f); the mint retries while the fleet boots.
     let bus_client = loop {
         match sentin8::bus::client::BusClient::for_workload(
@@ -60,12 +60,12 @@ pub async fn build_state(core: sentin8::shell::ServiceCore) -> anyhow::Result<ha
     };
 
     // The service's own workload transport (CERTFREE-4V): the
-    // `webhooks` certificate presents in the TLS handshake — the
+    // `webhooks` certificate presents in the TLS handshake - the
     // receiving service's TLS layer authenticates it and the registry
     // map authorizes the scopes.
     match build_workload_http(&config.sentin8_auth_issuer, "webhooks").await {
         Ok(http) => config.m2m_http = Some(http),
-        Err(e) => tracing::warn!(error = %e, "webhooks workload transport unavailable — degraded"),
+        Err(e) => tracing::warn!(error = %e, "webhooks workload transport unavailable - degraded"),
     }
 
     let policy_engine = core.admin.policy.clone();
@@ -78,7 +78,7 @@ pub async fn build_state(core: sentin8::shell::ServiceCore) -> anyhow::Result<ha
     };
 
     // Spawn the materialization consumers (one SSE loop per family;
-    // WH-2) — the delivery fan-out rides on the events table.
+    // WH-2) - the delivery fan-out rides on the events table.
     crate::consumers::spawn_consumers(state.clone());
 
     Ok(state)

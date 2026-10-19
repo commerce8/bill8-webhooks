@@ -10,7 +10,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/commerce8/bill8-webhooks"
 rust-version = "1.85"
-description = "Sentin8 Bill8:Webhooks — event materialization, signed delivery."
+description = "Sentin8 Bill8:Webhooks - event materialization, signed delivery."
 
 [[bin]]
 name = "bill8-webhooks"

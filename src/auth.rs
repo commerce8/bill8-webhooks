@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 // SPDX-License-Identifier: Apache-2.0
 
-//! Auth token verification for Bill8:Webhooks (steps 1–4).
+//! Auth token verification for Bill8:Webhooks (steps 1-4).
 
 use axum::http::{HeaderMap, StatusCode};
 

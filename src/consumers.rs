@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: Copyright Contributors to the Bill8:Webhooks
 // SPDX-License-Identifier: Apache-2.0
 
-//! Sentin8:Bus consumers for Bill8:Webhooks (WH-2) — event
+//! Sentin8:Bus consumers for Bill8:Webhooks (WH-2) - event
 //! materialization: consumes the vertical's families, dedupes by event
 //! id, and stores the envelope; the delivery worker fans out to the
 //! subscribed endpoints (see delivery.rs for the signed-delivery path).
@@ -43,7 +43,7 @@ async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: 
             .and_then(|v| v.as_str())
             .unwrap_or_default(),
     ) else {
-        // No event id — synthesize a deterministic one from the payload
+        // No event id - synthesize a deterministic one from the payload
         // (materialization is idempotent on the content).
         let _ = event_type;
         return;
@@ -128,7 +128,7 @@ async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: 
             if let Err(e) =
                 deliver_signed(state, env_id, &url, &secret_ref, event_type, &payload).await
             {
-                tracing::warn!(error = %e, "webhooks: first delivery attempt failed — retrying via worker");
+                tracing::warn!(error = %e, "webhooks: first delivery attempt failed - retrying via worker");
                 let _ = sqlx::query(
                     "UPDATE webhooks.deliveries SET status = 'retry', attempts = 1, last_attempted_at = now() WHERE id = $1",
                 )
@@ -148,7 +148,7 @@ async fn materialize(state: &AppState, env_id: Uuid, event_type: &str, payload: 
 }
 
 /// One signed delivery attempt: HMAC-sign the payload and POST it.
-/// Every delivery carries the signature header — an unsigned payload
+/// Every delivery carries the signature header - an unsigned payload
 /// is rejected by consumers (delivery.rs `verify_signature`).
 async fn deliver_signed(
     _state: &AppState,
@@ -241,7 +241,7 @@ pub fn spawn_consumers(state: AppState) {
                         }
                     }
                     Err(e) => {
-                        tracing::warn!(error = %e, family = family_static, "bus SSE consume failed — reconnecting");
+                        tracing::warn!(error = %e, family = family_static, "bus SSE consume failed - reconnecting");
                     }
                 }
                 tokio::time::sleep(RECONNECT_DELAY).await;

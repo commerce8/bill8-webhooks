@@ -1,4 +1,4 @@
-# Bill8:Webhooks — Event Delivery
+# Bill8:Webhooks - Event Delivery
 
 Event materialization, endpoint management, and signed delivery.
 
@@ -27,9 +27,9 @@ graph TD
 
 ## 4. Key Traits and Data Structures
 
-- `WebhookEndpoint` — a merchant-configured URL with a signing secret and
+- `WebhookEndpoint` - a merchant-configured URL with a signing secret and
   enabled event types.
-- `Event` — a materialized domain event with an envelope
+- `Event` - a materialized domain event with an envelope
   (`id`, `type`, `data`, `created`).
 - Delivery is HMAC-signed with the endpoint's secret; a delivery has a
   status and retry count.

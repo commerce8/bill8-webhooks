@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "bill8-webhooks",
-    "description": "Sentin8 Bill8:Webhooks — event materialization, signed delivery.",
+    "description": "Sentin8 Bill8:Webhooks - event materialization, signed delivery.",
     "license": {
       "name": "MIT OR Apache-2.0",
       "identifier": "MIT OR Apache-2.0"
@@ -15,7 +15,7 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "`GET /v1/events` — list materialized events.",
+        "summary": "`GET /v1/events` - list materialized events.",
         "operationId": "list_events",
         "responses": {
           "200": {
@@ -47,7 +47,7 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "`GET /v1/events/{id}/deliveries` — the delivery log for an event.",
+        "summary": "`GET /v1/events/{id}/deliveries` - the delivery log for an event.",
         "operationId": "list_deliveries",
         "responses": {
           "200": {
@@ -79,7 +79,7 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "`POST /v1/events/{id}/replay` — re-queue a DLQ/failed delivery for\nmanual replay (never silently dropped).",
+        "summary": "`POST /v1/events/{id}/replay` - re-queue a DLQ/failed delivery for\nmanual replay (never silently dropped).",
         "operationId": "replay_event",
         "responses": {
           "200": {
@@ -121,7 +121,7 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "`GET /v1/webhook-endpoints` — list endpoints.",
+        "summary": "`GET /v1/webhook-endpoints` - list endpoints.",
         "operationId": "list_endpoints",
         "responses": {
           "200": {
@@ -151,7 +151,7 @@
         "tags": [
           "webhooks"
         ],
-        "summary": "`POST /v1/webhook-endpoints` — register an endpoint.",
+        "summary": "`POST /v1/webhook-endpoints` - register an endpoint.",
         "operationId": "create_endpoint",
         "requestBody": {
           "content": {
@@ -291,7 +291,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Event id (dedupe key — duplicate delivery materializes one row)."
+            "description": "Event id (dedupe key - duplicate delivery materializes one row)."
           }
         }
       },

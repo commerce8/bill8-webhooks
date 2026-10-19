@@ -142,7 +142,7 @@ const POLICIES: &[PolicySetDecl] = &[PolicySetDecl {
 }];
 
 /// The materialization consumer is declared in `vertical-registry.json`
-/// (declarative registration) — `Registration.event_triggers` stays
+/// (declarative registration) - `Registration.event_triggers` stays
 /// empty; the consumer loop subscribes per family at runtime.
 const EVENT_TRIGGERS: &[sentin8::registration::EventTriggerDecl] = &[];
 
