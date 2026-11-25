@@ -23,7 +23,8 @@
       "telemetry_property": {
         "slug": "webhooks",
         "name": "Bill8:Webhooks Telemetry"
-      }
+      },
+      "exposure": "internal"
     }
   ]
 }
